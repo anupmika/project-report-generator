@@ -19,11 +19,11 @@ class ReportGenerator:
         if template_path:
             self.format_parser = ReportFormatParser(template_path)
 
-    def generate(self, format: str = "docx") -> bytes:
+    def generate(self, format: str = 'docx') -> bytes:
         """Generate report in specified format according to template."""
-        if format == "docx":
+        if format == 'docx':
             return self._generate_docx_from_template()
-        elif format == "pdf":
+        elif format == 'pdf':
             return self._generate_pdf_from_template()
         else:
             raise ValueError(f"Unsupported format: {format}. Only 'docx' and 'pdf' are supported.")
@@ -31,15 +31,15 @@ class ReportGenerator:
     def _get_repo_info(self):
         """Extract repo info."""
         try:
-            owner, repo = parse_github_url(self.analysis["url"])
+            owner, repo = parse_github_url(self.analysis['url'])
             repo_name = f"{owner}/{repo}"
         except:
-            repo_name = self.analysis["url"].rstrip('/').split('/')[-1]
+            repo_name = self.analysis['url'].rstrip('/').split('/')[-1]
         return repo_name
 
     def _read_repo_files(self):
         """Read important files from cloned repo."""
-        repo_path = Path(self.analysis.get("path", ""))
+        repo_path = Path(self.analysis.get('path', ''))
         content = {}
 
         if not repo_path.exists():
@@ -69,72 +69,72 @@ class ReportGenerator:
     def _generate_mermaid_diagrams(self):
         """Generate Mermaid diagrams for flowcharts and architecture."""
         repo_name = self._get_repo_info()
-        structure = self.analysis.get("structure", {})
-        files = self.analysis.get("files", [])
-        languages = self.analysis.get("languages", {})
+        structure = self.analysis.get('structure', {})
+        files = self.analysis.get('files', [])
+        languages = self.analysis.get('languages', {})
         diagrams = []
-        if structure.get("directories") or structure.get("root_files"):
-            flowchart = "```mermaid\ngraph TD\n"
+        if structure.get('directories') or structure.get('root_files'):
+            flowchart = '```mermaid\ngraph TD\n'
             flowchart += f"    A[{repo_name}] --> B[Root]\n"
-            for idx, d in enumerate(structure.get("directories", [])[:5]):
+            for idx, d in enumerate(structure.get('directories', [])[:5]):
                 flowchart += f"    B --> D{idx}[{d}/]\n"
-            for idx, f in enumerate(structure.get("root_files", [])[:5]):
+            for idx, f in enumerate(structure.get('root_files', [])[:5]):
                 flowchart += f"    B --> F{idx}[{f}]\n"
-            flowchart += "```"
-            diagrams.append(("Project Structure Flowchart", flowchart))
+            flowchart += '```'
+            diagrams.append(('Project Structure Flowchart', flowchart))
         if languages:
-            tech_flow = "```mermaid\nflowchart LR\n"
+            tech_flow = '```mermaid\nflowchart LR\n'
             tech_flow += f"    A[{repo_name}] --> B[Tech Stack]\n"
             for idx, lang in enumerate(sorted(languages.keys())[:6]):
                 tech_flow += f"    B --> T{idx}[{lang}]\n"
-            tech_flow += "```"
-            diagrams.append(("Technology Stack", tech_flow))
+            tech_flow += '```'
+            diagrams.append(('Technology Stack', tech_flow))
         if len(files) > 0:
-            file_flow = "```mermaid\ngraph LR\n"
+            file_flow = '```mermaid\ngraph LR\n'
             file_flow += f"    A[Repository] --> B[Source Files]\n"
             file_flow += f"    B --> C[Total: {len(files)} files]\n"
             file_flow += f"    C --> D[Analyzed]\n"
-            file_flow += "```"
-            diagrams.append(("File Organization", file_flow))
+            file_flow += '```'
+            diagrams.append(('File Organization', file_flow))
         return diagrams
 
     def _fill_template_content(self, doc):
         """Fill the document template with actual data from analysis."""
 
         repo_name = self._get_repo_info()
-        metadata = self.analysis.get("metadata", {})
-        stats = self.analysis.get("stats", {})
-        languages = self.analysis.get("languages", {})
-        structure = self.analysis.get("structure", {})
-        self.analysis.get("dependencies", {})
-        files = self.analysis.get("files", [])
+        metadata = self.analysis.get('metadata', {})
+        stats = self.analysis.get('stats', {})
+        languages = self.analysis.get('languages', {})
+        structure = self.analysis.get('structure', {})
+        self.analysis.get('dependencies', {})
+        files = self.analysis.get('files', [])
         repo_files_content = self._read_repo_files()
         mermaid_diagrams = self._generate_mermaid_diagrams()
 
-        latest_commit = metadata.get("latest_commit", {})
+        latest_commit = metadata.get('latest_commit', {})
 
         replacements = {
             '{{REPO_NAME}}': repo_name,
             '{{PROJECT_NAME}}': repo_name.split('/')[-1] if '/' in repo_name else repo_name,
-            '{{REPO_URL}}': self.analysis["url"],
-            '{{GITHUB_URL}}': self.analysis["url"],
-            '{{GENERATED_DATE}}': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            '{{DATE}}': datetime.now().strftime("%Y-%m-%d"),
-            '{{COMMIT_SHA}}': latest_commit.get("sha", "N/A"),
-            '{{LATEST_COMMIT_SHA}}': latest_commit.get("sha", "N/A"),
-            '{{COMMIT_MESSAGE}}': str(latest_commit.get("message", "N/A")).replace('\n', ' ').strip(),
-            '{{LATEST_COMMIT_MESSAGE}}': str(latest_commit.get("message", "N/A")).replace('\n', ' ').strip(),
-            '{{AUTHOR}}': str(latest_commit.get("author", "N/A")),
-            '{{COMMIT_AUTHOR}}': str(latest_commit.get("author", "N/A")),
-            '{{COMMIT_DATE}}': str(latest_commit.get("date", "N/A")),
-            '{{BRANCH}}': metadata.get("active_branch", "N/A"),
-            '{{ACTIVE_BRANCH}}': metadata.get("active_branch", "N/A"),
-            '{{COMMIT_COUNT}}': str(metadata.get("commit_count", 0)),
-            '{{TOTAL_COMMITS}}': str(metadata.get("commit_count", 0)),
-            '{{TOTAL_FILES}}': str(stats.get("total_files", 0)),
-            '{{FILE_COUNT}}': str(stats.get("total_files", 0)),
-            '{{TOTAL_SIZE}}': format_file_size(stats.get("total_size_bytes", 0)),
-            '{{SIZE}}': format_file_size(stats.get("total_size_bytes", 0)),
+            '{{REPO_URL}}': self.analysis['url'],
+            '{{GITHUB_URL}}': self.analysis['url'],
+            '{{GENERATED_DATE}}': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            '{{DATE}}': datetime.now().strftime('%Y-%m-%d'),
+            '{{COMMIT_SHA}}': latest_commit.get('sha', 'N/A'),
+            '{{LATEST_COMMIT_SHA}}': latest_commit.get('sha', 'N/A'),
+            '{{COMMIT_MESSAGE}}': str(latest_commit.get('message', 'N/A')).replace('\n', ' ').strip(),
+            '{{LATEST_COMMIT_MESSAGE}}': str(latest_commit.get('message', 'N/A')).replace('\n', ' ').strip(),
+            '{{AUTHOR}}': str(latest_commit.get('author', 'N/A')),
+            '{{COMMIT_AUTHOR}}': str(latest_commit.get('author', 'N/A')),
+            '{{COMMIT_DATE}}': str(latest_commit.get('date', 'N/A')),
+            '{{BRANCH}}': metadata.get('active_branch', 'N/A'),
+            '{{ACTIVE_BRANCH}}': metadata.get('active_branch', 'N/A'),
+            '{{COMMIT_COUNT}}': str(metadata.get('commit_count', 0)),
+            '{{TOTAL_COMMITS}}': str(metadata.get('commit_count', 0)),
+            '{{TOTAL_FILES}}': str(stats.get('total_files', 0)),
+            '{{FILE_COUNT}}': str(stats.get('total_files', 0)),
+            '{{TOTAL_SIZE}}': format_file_size(stats.get('total_size_bytes', 0)),
+            '{{SIZE}}': format_file_size(stats.get('total_size_bytes', 0)),
         }
 
         # Add languages/tech stack
@@ -145,8 +145,8 @@ class ReportGenerator:
             replacements['{{TECHNOLOGIES}}'] = lang_str
 
         # Add branches
-        if metadata.get("branches"):
-            replacements['{{BRANCHES}}'] = ', '.join(metadata.get("branches", []))
+        if metadata.get('branches'):
+            replacements['{{BRANCHES}}'] = ', '.join(metadata.get('branches', []))
 
         # Add README content (truncated)
         if repo_files_content.get('readme'):
@@ -158,8 +158,8 @@ class ReportGenerator:
             replacements['{{ABOUT}}'] = readme[:500].replace('#', '').strip()
 
         # Add file structure
-        if structure.get("directories"):
-            replacements['{{DIRECTORIES}}'] = ', '.join(structure["directories"])
+        if structure.get('directories'):
+            replacements['{{DIRECTORIES}}'] = ', '.join(structure['directories'])
         if files:
             replacements['{{FILES}}'] = '\n'.join(files[:50])
             replacements['{{FILE_LIST}}'] = '\n'.join(files[:50])
@@ -215,13 +215,13 @@ class ReportGenerator:
         """Fill template by matching headings to repo content."""
         if mermaid_diagrams is None:
             mermaid_diagrams = []
-        metadata = self.analysis.get("metadata", {})
-        stats = self.analysis.get("stats", {})
-        languages = self.analysis.get("languages", {})
-        structure = self.analysis.get("structure", {})
-        self.analysis.get("dependencies", {})
-        files = self.analysis.get("files", [])
-        latest_commit = metadata.get("latest_commit", {})
+        metadata = self.analysis.get('metadata', {})
+        stats = self.analysis.get('stats', {})
+        languages = self.analysis.get('languages', {})
+        structure = self.analysis.get('structure', {})
+        self.analysis.get('dependencies', {})
+        files = self.analysis.get('files', [])
+        latest_commit = metadata.get('latest_commit', {})
         readme = repo_files_content.get('readme', '')
 
         i = 0
@@ -250,7 +250,7 @@ class ReportGenerator:
 
                 elif any(k in text for k in ['technology', 'tech', 'tools', 'stack']):
                     if languages:
-                        tech_text = "Technologies used: " + ", ".join(sorted(languages.keys()))
+                        tech_text = 'Technologies used: ' + ', '.join(sorted(languages.keys()))
                         if j < len(doc.paragraphs):
                             doc.paragraphs[j].text = tech_text
                     elif structure.get('root_files'):
@@ -319,7 +319,7 @@ class ReportGenerator:
         from docx import Document
 
         if not self.template_path or not Path(self.template_path).exists():
-            raise ValueError("Project report format template (DOCX) is required")
+            raise ValueError('Project report format template (DOCX) is required')
 
         # Load the template
         doc = Document(self.template_path)
@@ -336,7 +336,7 @@ class ReportGenerator:
         from weasyprint import HTML
 
         if not self.template_path or not Path(self.template_path).exists():
-            raise ValueError("Project report format template (DOCX) is required")
+            raise ValueError('Project report format template (DOCX) is required')
 
         # Load template, fill it
         doc = Document(self.template_path)

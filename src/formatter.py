@@ -16,9 +16,9 @@ class ReportFormatParser:
     def parse(self) -> dict[str, Any]:
         """Parse the template to extract structure."""
         structure = {
-            "sections": [],
-            "headings": [],
-            "placeholders": [],
+            'sections': [],
+            'headings': [],
+            'placeholders': [],
         }
 
         for para in self.doc.paragraphs:
@@ -29,36 +29,36 @@ class ReportFormatParser:
             # Check if it's a heading
             style_name = para.style.name.lower()
             if style_name.startswith('heading'):
-                structure["headings"].append({
-                    "level": style_name,
-                    "text": text
+                structure['headings'].append({
+                    'level': style_name,
+                    'text': text
                 })
-                structure["sections"].append({
-                    "type": "heading",
-                    "level": style_name,
-                    "content": text
+                structure['sections'].append({
+                    'type': 'heading',
+                    'level': style_name,
+                    'content': text
                 })
             elif text.startswith(('{{', '[')):
-                structure["placeholders"].append(text)
-                structure["sections"].append({
-                    "type": "placeholder",
-                    "content": text
+                structure['placeholders'].append(text)
+                structure['sections'].append({
+                    'type': 'placeholder',
+                    'content': text
                 })
             else:
-                structure["sections"].append({
-                    "type": "paragraph",
-                    "content": text
+                structure['sections'].append({
+                    'type': 'paragraph',
+                    'content': text
                 })
 
         # Also extract tables
         for table in self.doc.tables:
-            structure["sections"].append({
-                "type": "table",
-                "rows": len(table.rows),
-                "cols": len(table.columns) if table.rows else 0
+            structure['sections'].append({
+                'type': 'table',
+                'rows': len(table.rows),
+                'cols': len(table.columns) if table.rows else 0
             })
 
-        self.sections = structure["sections"]
+        self.sections = structure['sections']
         return structure
 
     def get_structure(self) -> list[dict[str, Any]]:
