@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from formatter import ReportFormatParser
+from src.formatter import ReportFormatParser
 from pathlib import Path
 from typing import Any
 
-from utils import format_file_size, parse_github_url
+from src.utils import format_file_size, parse_github_url
 
 
 class ReportGenerator:

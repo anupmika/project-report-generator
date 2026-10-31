@@ -5,9 +5,9 @@ import tempfile
 
 import streamlit as st
 
-from analyzer import RepoAnalyzer
-from generator import ReportGenerator
-from utils import is_valid_github_url
+from src.analyzer import RepoAnalyzer
+from src.generator import ReportGenerator
+from src.utils import is_valid_github_url
 
 st.set_page_config(
     page_title='Project Report Generator',

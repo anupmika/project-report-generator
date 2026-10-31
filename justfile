@@ -13,7 +13,7 @@ sync:
 
 # Run the Streamlit application development server
 dev: sync
-    @uv run streamlit run streamlit_app.py \
+    @uv run streamlit run app.py \
     --server.runOnSave true \
     --server.headless=false \
     --server.address=0.0.0.0
