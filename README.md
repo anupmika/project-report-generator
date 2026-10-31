@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# project-report-generator
-Generate professional project reports automatically by uploading predefined templates or formats and populating them with project-specific information.
-=======
 # Project Report Generator
 
 A Python tool to generate comprehensive project reports from GitHub repository links strictly according to a custom DOCX format template. Reports are generated in **DOCX** and **PDF** formats only. All dependencies are managed using [uv](https://docs.astral.sh/uv/) in a local virtual environment - nothing is installed system-wide.
@@ -47,6 +43,7 @@ streamlit run app.py
 ```
 
 The UI allows you to:
+
 1. Enter a GitHub repository URL
 2. Upload your project report format template (DOCX only)
 3. Select output format (DOCX or PDF)
@@ -80,7 +77,7 @@ Use these placeholders in your DOCX template to be replaced with actual data:
 
 ## Project Structure
 
-```
+```tree
 project-report/
 ├── pyproject.toml      # Project configuration and dependencies (managed by uv)
 ├── README.md           # This file
@@ -100,6 +97,3 @@ project-report/
 ## Dependencies
 
 All dependencies are managed locally with uv - see `pyproject.toml` for details.
-
-
->>>>>>> 1c37aef (refactor: move package from src/project_report to src)
