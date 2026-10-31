@@ -88,7 +88,7 @@ class RepoAnalyzer:
 
         return structure
 
-    def _get_languages(self) -> dict[str, int]:
+    def _get_languages(self) -> dict[str, int | str]:
         """Detect programming languages used."""
         repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
         extensions: defaultdict[str, int] = defaultdict(int)
