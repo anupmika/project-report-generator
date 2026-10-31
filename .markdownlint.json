@@ -1,0 +1,11 @@
+{
+  "MD013": {
+    "line_length": 999
+  },
+  "MD033": {
+    "allowed_elements": [
+      "script",
+      "br"
+    ]
+  }
+}

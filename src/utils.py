@@ -9,15 +9,13 @@ def parse_github_url(url: str) -> tuple[str, str]:
     if url.startswith("git@github.com:"):
         # SSH format: git@github.com:owner/repo.git
         path = url.split(":")[1]
-        if path.endswith(".git"):
-            path = path[:-4]
+        path = path.removesuffix(".git")
         owner, repo = path.split("/")
         return owner, repo
 
     parsed = urlparse(url)
     path = parsed.path.strip("/")
-    if path.endswith(".git"):
-        path = path[:-4]
+    path = path.removesuffix(".git")
     parts = path.split("/")
     if len(parts) >= 2:
         return parts[0], parts[1]

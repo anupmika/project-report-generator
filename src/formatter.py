@@ -1,6 +1,6 @@
 """Format parser for custom project report templates."""
 
-from typing import Any, Dict, List
+from typing import Any
 
 from docx import Document
 
@@ -13,7 +13,7 @@ class ReportFormatParser:
         self.doc = Document(template_path)
         self.sections = []
 
-    def parse(self) -> Dict[str, Any]:
+    def parse(self) -> dict[str, Any]:
         """Parse the template to extract structure."""
         structure = {
             "sections": [],
@@ -38,7 +38,7 @@ class ReportFormatParser:
                     "level": style_name,
                     "content": text
                 })
-            elif text.startswith('{{') or text.startswith('['):
+            elif text.startswith(('{{', '[')):
                 structure["placeholders"].append(text)
                 structure["sections"].append({
                     "type": "placeholder",
@@ -61,7 +61,7 @@ class ReportFormatParser:
         self.sections = structure["sections"]
         return structure
 
-    def get_structure(self) -> List[Dict[str, Any]]:
+    def get_structure(self) -> list[dict[str, Any]]:
         """Get parsed structure."""
         if not self.sections:
             self.parse()

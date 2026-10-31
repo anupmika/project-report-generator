@@ -1,16 +1,18 @@
 """Report generation logic."""
+from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, Any
-from pathlib import Path
-from utils import format_file_size, parse_github_url
 from formatter import ReportFormatParser
+from pathlib import Path
+from typing import Any
+
+from utils import format_file_size, parse_github_url
 
 
 class ReportGenerator:
     """Generate reports strictly according to a given project report format template."""
 
-    def __init__(self, analysis: Dict[str, Any], template_path: str = None):
+    def __init__(self, analysis: dict[str, Any], template_path: str | None = None):
         self.analysis = analysis
         self.template_path = template_path
         self.format_parser = None
@@ -98,16 +100,13 @@ class ReportGenerator:
 
     def _fill_template_content(self, doc):
         """Fill the document template with actual data from analysis."""
-        from docx import Document
-        from docx.oxml.ns import qn
-        from docx.oxml import OxmlElement
 
         repo_name = self._get_repo_info()
         metadata = self.analysis.get("metadata", {})
         stats = self.analysis.get("stats", {})
         languages = self.analysis.get("languages", {})
         structure = self.analysis.get("structure", {})
-        dependencies = self.analysis.get("dependencies", {})
+        self.analysis.get("dependencies", {})
         files = self.analysis.get("files", [])
         repo_files_content = self._read_repo_files()
         mermaid_diagrams = self._generate_mermaid_diagrams()
@@ -220,7 +219,7 @@ class ReportGenerator:
         stats = self.analysis.get("stats", {})
         languages = self.analysis.get("languages", {})
         structure = self.analysis.get("structure", {})
-        dependencies = self.analysis.get("dependencies", {})
+        self.analysis.get("dependencies", {})
         files = self.analysis.get("files", [])
         latest_commit = metadata.get("latest_commit", {})
         readme = repo_files_content.get('readme', '')
@@ -315,8 +314,9 @@ class ReportGenerator:
 
     def _generate_docx_from_template(self) -> bytes:
         """Generate DOCX strictly according to template format."""
-        from docx import Document
         import io
+
+        from docx import Document
 
         if not self.template_path or not Path(self.template_path).exists():
             raise ValueError("Project report format template (DOCX) is required")

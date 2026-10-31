@@ -48,7 +48,7 @@ def main(repo_url: str, template: str, format: str, output: str):
         sys.exit(1)
 
     if not template.endswith(".docx"):
-        console.print(f"[red]Error:[/red] Template must be in DOCX format")
+        console.print("[red]Error:[/red] Template must be in DOCX format")
         sys.exit(1)
 
     try:

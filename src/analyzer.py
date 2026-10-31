@@ -4,7 +4,7 @@ import os
 import tempfile
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # pyrefly: ignore[missing-import]
 from git import Repo
@@ -24,7 +24,7 @@ class RepoAnalyzer:
         self.repo = Repo.clone_from(self.repo_url, self.temp_dir)
         return Path(self.temp_dir)
 
-    def analyze(self) -> Dict[str, Any]:
+    def analyze(self) -> dict[str, Any]:
         """Perform comprehensive repository analysis."""
         if not self.repo:
             self.clone_repo()
@@ -43,12 +43,12 @@ class RepoAnalyzer:
         }
         return analysis
 
-    def _get_metadata(self) -> Dict[str, Any]:
+    def _get_metadata(self) -> dict[str, Any]:
         """Get repository metadata."""
         try:
             head = self.repo.head.commit
             branches = [str(b) for b in self.repo.branches]
-            remotes = {r.name: list(r.urls)[0] for r in self.repo.remotes}
+            remotes = {r.name: next(iter(r.urls)) for r in self.repo.remotes}
 
             return {
                 "commit_count": sum(1 for _ in self.repo.iter_commits()),
@@ -65,7 +65,7 @@ class RepoAnalyzer:
         except Exception as e:
             return {"error": str(e)}
 
-    def _get_structure(self) -> Dict[str, Any]:
+    def _get_structure(self) -> dict[str, Any]:
         """Get repository directory structure."""
         repo_path = Path(self.temp_dir)
         structure = {
@@ -86,7 +86,7 @@ class RepoAnalyzer:
 
         return structure
 
-    def _get_languages(self) -> Dict[str, int]:
+    def _get_languages(self) -> dict[str, int]:
         """Detect programming languages used."""
         repo_path = Path(self.temp_dir)
         extensions = defaultdict(int)
@@ -124,7 +124,7 @@ class RepoAnalyzer:
 
         return dict(extensions)
 
-    def _get_dependencies(self) -> Dict[str, List[str]]:
+    def _get_dependencies(self) -> dict[str, list[str]]:
         """Extract dependency information from common files."""
         repo_path = Path(self.temp_dir)
         deps = {}
@@ -149,7 +149,7 @@ class RepoAnalyzer:
 
         return deps
 
-    def _get_stats(self) -> Dict[str, Any]:
+    def _get_stats(self) -> dict[str, Any]:
         """Get repository statistics."""
         repo_path = Path(self.temp_dir)
         total_files = 0
@@ -174,7 +174,7 @@ class RepoAnalyzer:
             "total_size_bytes": total_size,
         }
 
-    def _get_file_list(self) -> List[str]:
+    def _get_file_list(self) -> list[str]:
         """Get list of files (limited)."""
         repo_path = Path(self.temp_dir)
         files = []
@@ -194,4 +194,3 @@ class RepoAnalyzer:
     def cleanup(self):
         """Clean up temporary directory."""
         # Could implement cleanup if needed
-        pass
