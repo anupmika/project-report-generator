@@ -15,8 +15,8 @@ class RepoAnalyzer:
 
     def __init__(self, repo_url: str):
         self.repo_url = repo_url
-        self.temp_dir = None
-        self.repo = None
+        self.temp_dir: str | None = None
+        self.repo: Repo | None = None
 
     def clone_repo(self) -> Path:
         """Clone repository to temporary directory."""
@@ -29,7 +29,7 @@ class RepoAnalyzer:
         if not self.repo:
             self.clone_repo()
 
-        repo_path = Path(self.temp_dir)
+        repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
 
         analysis = {
             'url': self.repo_url,
@@ -46,6 +46,8 @@ class RepoAnalyzer:
     def _get_metadata(self) -> dict[str, Any]:
         """Get repository metadata."""
         try:
+            if not self.repo:
+                return {'error': 'Repository not cloned'}
             head = self.repo.head.commit
             branches = [str(b) for b in self.repo.branches]
             remotes = {r.name: next(iter(r.urls)) for r in self.repo.remotes}
@@ -67,8 +69,8 @@ class RepoAnalyzer:
 
     def _get_structure(self) -> dict[str, Any]:
         """Get repository directory structure."""
-        repo_path = Path(self.temp_dir)
-        structure = {
+        repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
+        structure: dict[str, Any] = {
             'directories': [],
             'root_files': [],
         }
@@ -88,8 +90,8 @@ class RepoAnalyzer:
 
     def _get_languages(self) -> dict[str, int]:
         """Detect programming languages used."""
-        repo_path = Path(self.temp_dir)
-        extensions = defaultdict(int)
+        repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
+        extensions: defaultdict[str, int] = defaultdict(int)
         lang_map = {
             '.py': 'Python',
             '.js': 'JavaScript',
@@ -117,17 +119,17 @@ class RepoAnalyzer:
                         full_path = Path(root) / file
                         try:
                             extensions[lang_map[ext]] += full_path.stat().st_size
-                        except:
+                        except Exception:
                             extensions[lang_map[ext]] += 1
         except Exception as e:
             return {'error': str(e)}
 
         return dict(extensions)
 
-    def _get_dependencies(self) -> dict[str, list[str]]:
+    def _get_dependencies(self) -> dict[str, list[str] | dict[str, str]]:
         """Extract dependency information from common files."""
-        repo_path = Path(self.temp_dir)
-        deps = {}
+        repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
+        deps: dict[str, list[str] | dict[str, str]] = {}
 
         dep_files = {
             'requirements.txt': 'pip',
@@ -151,7 +153,7 @@ class RepoAnalyzer:
 
     def _get_stats(self) -> dict[str, Any]:
         """Get repository statistics."""
-        repo_path = Path(self.temp_dir)
+        repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
         total_files = 0
         total_size = 0
 
@@ -164,7 +166,7 @@ class RepoAnalyzer:
                     full_path = Path(root) / file
                     try:
                         total_size += full_path.stat().st_size
-                    except:
+                    except Exception:
                         pass
         except Exception as e:
             return {'error': str(e)}
@@ -176,8 +178,8 @@ class RepoAnalyzer:
 
     def _get_file_list(self) -> list[str]:
         """Get list of files (limited)."""
-        repo_path = Path(self.temp_dir)
-        files = []
+        repo_path = Path(self.temp_dir) if self.temp_dir else Path('.')
+        files: list[str] = []
 
         try:
             for root, dirs, filenames in os.walk(repo_path):

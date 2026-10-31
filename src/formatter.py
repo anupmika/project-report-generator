@@ -11,11 +11,11 @@ class ReportFormatParser:
     def __init__(self, template_path: str):
         self.template_path = template_path
         self.doc = Document(template_path)
-        self.sections = []
+        self.sections: list[dict[str, Any]] = []
 
     def parse(self) -> dict[str, Any]:
         """Parse the template to extract structure."""
-        structure = {
+        structure: dict[str, Any] = {
             'sections': [],
             'headings': [],
             'placeholders': [],
