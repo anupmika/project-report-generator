@@ -1,0 +1,114 @@
+repos:
+  # Syncs pre-commit dependencies with the latest versions.
+  - repo: https://github.com/mxr/sync-pre-commit-deps
+    rev: "v0.0.5"
+    hooks:
+      - id: sync-pre-commit-deps
+  # Pre-commit hooks for general file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v6.0.0"
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-json
+        exclude: '\.ipynb$' # Exclude Jupyter notebooks
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: destroyed-symlinks
+      # - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: double-quote-string-fixer
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+      - id: name-tests-test
+      - id: pretty-format-json
+        args: [--autofix]
+        exclude: '\.ipynb$' # Exclude Jupyter notebooks
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+  # Uses pygrep to enforce Python type annotations.
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: "v1.10.0"
+    hooks:
+      - id: python-use-type-annotations
+  # Runs mypy to check Python type annotations.
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v2.4.0"
+    hooks:
+      - id: mypy
+  # ShellCheck hook for linting shell scripts
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: "v0.11.0.1-1"
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        description: This hook runs shellcheck for linting shell scripts
+  # Bashate hook for linting shell scripts
+  - repo: https://github.com/openstack/bashate
+    rev: "2.1.1"
+    hooks:
+      - id: bashate
+        name: bashate
+        description: This hook runs bashate for linting shell scripts
+        entry: bashate
+        language: python
+        types: [shell]
+  # Actionlint for linting GitHub Actions YAML files
+  - repo: https://github.com/rhysd/actionlint
+    rev: "v1.7.12"
+    hooks:
+      - id: actionlint
+  # Yamlfmt for formatting YAML files
+  - repo: https://github.com/google/yamlfmt
+    rev: "v0.21.0"
+    hooks:
+      - id: yamlfmt
+  # Codespell for detecting common misspellings in code
+  - repo: https://github.com/codespell-project/codespell
+    rev: "v2.4.3"
+    hooks:
+      - id: codespell
+  # Checkmake for linting Makefiles
+  - repo: https://github.com/mrtazz/checkmake
+    rev: "v0.3.0"
+    hooks:
+      - id: checkmake
+  # SQLFluff for linting and fixing SQL files
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: "4.4.0"
+    hooks:
+      - id: sqlfluff-lint
+      - id: sqlfluff-fix
+  # Gitleaks for detecting secrets in Git repositories
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: "v8.30.0"
+    hooks:
+      - id: gitleaks
+  # Talisman for pre-commit Git hooks to detect sensitive files
+  - repo: https://github.com/thoughtworks/talisman
+    rev: "v1.37.0"
+    hooks:
+      - id: talisman-commit
+        entry: cmd --githook pre-commit
+  # Markdownlint for linting Markdown files
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: "v0.24.0"
+    hooks:
+      - id: markdownlint-cli2
+        args: [--fix]
+  # Justfile checker for linting Justfiles
+  - repo: https://github.com/instrumentl/pre-commit-just
+    rev: "v0.2"
+    hooks:
+      - id: check-justfile

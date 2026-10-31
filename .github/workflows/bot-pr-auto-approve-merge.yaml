@@ -1,0 +1,23 @@
+name: Bot PR Auto Approve & Merge
+on:
+  pull_request:
+  workflow_call:
+permissions:
+  pull-requests: write
+  contents: write
+jobs:
+  auto-approve-and-merge:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.user.type == 'Bot' && (
+        github.event.pull_request.user.login == 'dependabot[bot]' ||
+        github.event.pull_request.user.login == 'pre-commit-ci[bot]'
+      )
+    steps:
+      - name: Approve & Auto-Merge PR
+        run: |
+          gh pr review --approve "${PR_URL}"
+          gh pr merge --auto --squash "${PR_URL}"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
